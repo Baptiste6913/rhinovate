@@ -5,21 +5,18 @@ import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 const testimonials = [
   {
     content: "Rhinovate transformed my practice. Patients can now see their potential results and healing timeline with remarkable accuracy, boosting conversion rates and reducing post-op anxiety calls by 70%.",
-    author: "Dr. Sarah Chen",
     title: "Facial Plastic Surgeon",
     location: "Beverly Hills Aesthetics",
     avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158"
   },
   {
     content: "As a clinic manager, I've seen consultation-to-surgery conversion rates increase by 35% since implementing Rhinovate. The visualization tools create realistic expectations and significantly reduce patient hesitation.",
-    author: "Michael Rodriguez",
     title: "Practice Manager",
     location: "Miami Facial Institute",
     avatar: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
   },
   {
     content: "The 3D healing timeline feature has dramatically reduced our post-op support calls. Patients know exactly what to expect at each stage of recovery, creating a smoother experience for everyone involved.",
-    author: "Dr. Emily Thompson",
     title: "ENT Specialist",
     location: "Advanced Rhinoplasty Center",
     avatar: "https://images.unsplash.com/photo-1498050108023-c5249f4df085"
@@ -86,13 +83,12 @@ const Testimonials = () => {
                       <div className="flex-shrink-0 mr-4">
                         <img 
                           src={testimonial.avatar} 
-                          alt={testimonial.author} 
+                          alt={testimonial.title} 
                           className="h-14 w-14 rounded-full object-cover"
                         />
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">{testimonial.author}</p>
-                        <p className="text-gray-600">{testimonial.title}</p>
+                        <p className="font-semibold text-gray-900">{testimonial.title}</p>
                         <p className="text-rhinovate-600 text-sm">{testimonial.location}</p>
                       </div>
                     </div>
