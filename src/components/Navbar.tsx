@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -35,7 +34,7 @@ const Navbar = () => {
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
             <img 
-              src="/public/lovable-uploads/5da6ab51-f387-4ff4-a643-49a748b49302.png" 
+              src="/lovable-uploads/5da6ab51-f387-4ff4-a643-49a748b49302.png" 
               alt="Rhinovate Logo" 
               className="h-12" 
             />
