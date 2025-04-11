@@ -70,9 +70,6 @@ const Navbar = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link to="/about" className="w-full">About Us</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
                 <Link to="/team" className="w-full">Team</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -140,13 +137,6 @@ const Navbar = () => {
           <div className="w-full border-t border-gray-200 pt-4">
             <h3 className="text-lg font-bold text-center mb-4">COMPANY</h3>
             <div className="flex flex-col space-y-4 items-center">
-              <Link 
-                to="/about" 
-                className="text-base font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                About Us
-              </Link>
               <Link 
                 to="/team" 
                 className="text-base font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
