@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -55,6 +56,9 @@ const Navbar = () => {
           <a href="#testimonials" className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors">
             Testimonials
           </a>
+          <Link to="/about" className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors">
+            À propos
+          </Link>
           <Link to="/news" className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors">
             News
           </Link>
@@ -104,6 +108,13 @@ const Navbar = () => {
           >
             Testimonials
           </a>
+          <Link 
+            to="/about" 
+            className="text-lg font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
+            onClick={() => setIsOpen(false)}
+          >
+            À propos
+          </Link>
           <Link 
             to="/news" 
             className="text-lg font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
