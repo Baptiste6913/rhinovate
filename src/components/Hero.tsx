@@ -2,12 +2,30 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Check, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const emailSchema = z.object({
+  email: z.string().email({ message: 'Please enter a valid email address' }),
+});
 
 const Hero = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const [email, setEmail] = useState('');
   const { toast } = useToast();
   const [showEmailInput, setShowEmailInput] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const form = useForm<z.infer<typeof emailSchema>>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      email: '',
+    },
+  });
   
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -33,21 +51,69 @@ const Hero = () => {
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  const sendEmail = async (emailAddress: string, subject: string, message: string) => {
+    setIsSubmitting(true);
+    try {
+      // Form data approach for sending emails
+      const formData = new FormData();
+      formData.append('to', 'rhinovateinc@gmail.com');
+      formData.append('subject', subject);
+      formData.append('message', message);
+      
+      // Use mailto as a fallback approach
+      const mailtoUrl = `mailto:rhinovateinc@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+      window.open(mailtoUrl);
+      
       toast({
         title: "Thank you for your interest!",
         description: "We'll notify you when the demo becomes available.",
       });
-      setEmail('');
-      setShowEmailInput(false);
+      return true;
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      toast({
+        title: "Something went wrong",
+        description: "Could not send your email. Please try again later.",
+        variant: "destructive",
+      });
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      const success = await sendEmail(
+        'rhinovateinc@gmail.com',
+        'New Demo Notification Request',
+        `A visitor has requested to be notified when the demo is available.\n\nEmail: ${email}`
+      );
+      
+      if (success) {
+        setEmail('');
+        setShowEmailInput(false);
+      }
     } else {
       toast({
         title: "Invalid email",
         description: "Please enter a valid email address.",
         variant: "destructive",
       });
+    }
+  };
+
+  const onFormSubmit = async (values: z.infer<typeof emailSchema>) => {
+    const success = await sendEmail(
+      'rhinovateinc@gmail.com',
+      'New Demo Notification Request',
+      `A visitor has requested to be notified when the demo is available.\n\nEmail: ${values.email}`
+    );
+    
+    if (success) {
+      form.reset();
+      setShowEmailInput(false);
     }
   };
 
@@ -75,7 +141,16 @@ const Hero = () => {
           </p>
           
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
-            <a href="#contact" className="rhinovate-btn-primary group">
+            <a 
+              href="#contact" 
+              className="rhinovate-btn-primary group"
+              onClick={() => {
+                // Open mailto link when clicking "Schedule a Demo"
+                const subject = encodeURIComponent("Schedule a Demo Request");
+                const body = encodeURIComponent("I would like to schedule a demo for Rhinovate's visualization platform.\n\nPlease contact me with available dates and times.\n\nThank you.");
+                window.open(`mailto:rhinovateinc@gmail.com?subject=${subject}&body=${body}`);
+              }}
+            >
               Schedule a Demo
               <ArrowRight className="inline ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </a>
@@ -107,8 +182,9 @@ const Hero = () => {
                 <button 
                   type="submit"
                   className="rhinovate-btn-primary whitespace-nowrap"
+                  disabled={isSubmitting}
                 >
-                  Notify Me
+                  {isSubmitting ? 'Sending...' : 'Notify Me'}
                 </button>
               </form>
             )}

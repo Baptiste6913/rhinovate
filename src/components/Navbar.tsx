@@ -32,9 +32,16 @@ const Navbar = () => {
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center">
-          <Link to="/" className="font-display text-2xl font-semibold tracking-tight text-rhinovate-900">
-            Rhinovate
+        <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
+            <img 
+              src="/public/lovable-uploads/5da6ab51-f387-4ff4-a643-49a748b49302.png" 
+              alt="Rhinovate Logo" 
+              className="h-12" 
+            />
+            <span className="font-display text-2xl font-semibold tracking-tight text-rhinovate-900 hidden sm:inline">
+              Rhinovate
+            </span>
           </Link>
         </div>
 
