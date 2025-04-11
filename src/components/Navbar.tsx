@@ -1,8 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -56,12 +62,34 @@ const Navbar = () => {
           <a href="#testimonials" className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors">
             Testimonials
           </a>
-          <Link to="/about" className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors">
-            À propos
-          </Link>
-          <Link to="/news" className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors">
-            News
-          </Link>
+          
+          {/* Company Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors flex items-center gap-1">
+              COMPANY <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link to="/about" className="w-full">About Us</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/team" className="w-full">Team</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/careers" className="w-full">Careers</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/press" className="w-full">Press</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/news" className="w-full">News</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/contact" className="w-full">Contact</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
           <a href="#contact" className="rhinovate-btn-primary">
             Request Demo
           </a>
@@ -108,20 +136,55 @@ const Navbar = () => {
           >
             Testimonials
           </a>
-          <Link 
-            to="/about" 
-            className="text-lg font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
-            onClick={() => setIsOpen(false)}
-          >
-            À propos
-          </Link>
-          <Link 
-            to="/news" 
-            className="text-lg font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
-            onClick={() => setIsOpen(false)}
-          >
-            News
-          </Link>
+          
+          <div className="w-full border-t border-gray-200 pt-4">
+            <h3 className="text-lg font-bold text-center mb-4">COMPANY</h3>
+            <div className="flex flex-col space-y-4 items-center">
+              <Link 
+                to="/about" 
+                className="text-base font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                About Us
+              </Link>
+              <Link 
+                to="/team" 
+                className="text-base font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Team
+              </Link>
+              <Link 
+                to="/careers" 
+                className="text-base font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Careers
+              </Link>
+              <Link 
+                to="/press" 
+                className="text-base font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Press
+              </Link>
+              <Link 
+                to="/news" 
+                className="text-base font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                News
+              </Link>
+              <Link 
+                to="/contact" 
+                className="text-base font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Contact
+              </Link>
+            </div>
+          </div>
+          
           <a 
             href="#contact" 
             className="rhinovate-btn-primary w-full text-center"
