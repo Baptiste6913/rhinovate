@@ -44,13 +44,13 @@ export const fetchRhinoplastyNews = async (): Promise<NewsArticle[]> => {
   } catch (error) {
     console.error("Error fetching news:", error);
     
-    // Fallback to some real articles if the API fails
+    // Fallback to some real articles if the API fails, with diverse images
     return [
       {
         title: "Rhinoplasty: Getting Started with a Nose Reshaping Procedure",
         description: "Everything you need to know about nose reshaping surgery, including cost, recovery, and choosing a surgeon.",
         url: "https://www.plasticsurgery.org/cosmetic-procedures/rhinoplasty",
-        urlToImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+        urlToImage: "https://images.unsplash.com/photo-1518877593221-1f28583780b4", // Humpback whale jumping on sea (sens artistique sur transformation)
         publishedAt: new Date().toISOString(),
         source: { name: "American Society of Plastic Surgeons" }
       },
@@ -58,7 +58,7 @@ export const fetchRhinoplastyNews = async (): Promise<NewsArticle[]> => {
         title: "Rhinoplasty (Nose Job): Purpose, Procedure, Risks, Recovery",
         description: "Learn about rhinoplasty (nose job) surgery, including what to expect during recovery and potential risks of the procedure.",
         url: "https://www.hopkinsmedicine.org/health/treatment-tests-and-therapies/rhinoplasty",
-        urlToImage: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+        urlToImage: "https://images.unsplash.com/photo-1582562124811-c09040d0a901", // Orange and white tabby cat (repose, récupération)
         publishedAt: new Date(Date.now() - 86400000).toISOString(),
         source: { name: "Johns Hopkins Medicine" }
       },
@@ -66,7 +66,7 @@ export const fetchRhinoplastyNews = async (): Promise<NewsArticle[]> => {
         title: "Rhinoplasty - Mayo Clinic",
         description: "Rhinoplasty can change bone, cartilage, skin or all three. Talk with your surgeon about whether rhinoplasty is appropriate for you.",
         url: "https://www.mayoclinic.org/tests-procedures/rhinoplasty/about/pac-20384532",
-        urlToImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+        urlToImage: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7", // Consultation sur ordinateur (recherche médecin)
         publishedAt: new Date(Date.now() - 172800000).toISOString(),
         source: { name: "Mayo Clinic" }
       },
@@ -74,7 +74,7 @@ export const fetchRhinoplastyNews = async (): Promise<NewsArticle[]> => {
         title: "What to Expect During Recovery After Rhinoplasty",
         description: "Prepare for rhinoplasty recovery with this timeline of what to expect from your surgeon after nose surgery.",
         url: "https://www.plasticsurgery.org/news/blog/what-to-expect-during-your-rhinoplasty-recovery",
-        urlToImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+        urlToImage: "https://images.unsplash.com/photo-1500673922987-e212871fec22", // Lumières jaunes entre arbres (espoir, renaissance)
         publishedAt: new Date(Date.now() - 259200000).toISOString(),
         source: { name: "American Society of Plastic Surgeons" }
       },
@@ -82,7 +82,7 @@ export const fetchRhinoplastyNews = async (): Promise<NewsArticle[]> => {
         title: "Rhinoplasty | ASPS",
         description: "Also known as nose surgery or a nose job, rhinoplasty reshapes the nose to improve its appearance and often its function.",
         url: "https://www.plasticsurgery.org/cosmetic-procedures/rhinoplasty/animation",
-        urlToImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+        urlToImage: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b", // Table de consultation médicale (métaphore clinique)
         publishedAt: new Date(Date.now() - 345600000).toISOString(),
         source: { name: "American Society of Plastic Surgeons" }
       }
@@ -99,3 +99,4 @@ export const useRhinoplastyNews = (refreshInterval = 60000) => {
     staleTime: refreshInterval / 2,
   });
 };
+
