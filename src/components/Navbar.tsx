@@ -50,9 +50,9 @@ const Navbar = () => {
           <a href="#features" className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors">
             Features
           </a>
-          <a href="#how-it-works" className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors">
+          <Link to="/how-it-works" className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors">
             How It Works
-          </a>
+          </Link>
           <a href="#testimonials" className="text-sm font-medium text-gray-700 hover:text-rhinovate-600 transition-colors">
             Testimonials
           </a>
@@ -93,13 +93,13 @@ const Navbar = () => {
           >
             Features
           </a>
-          <a 
-            href="#how-it-works" 
+          <Link
+            to="/how-it-works"
             className="text-lg font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
             onClick={() => setIsOpen(false)}
           >
             How It Works
-          </a>
+          </Link>
           <a 
             href="#testimonials" 
             className="text-lg font-medium text-gray-700 hover:text-rhinovate-600 transition-colors"
