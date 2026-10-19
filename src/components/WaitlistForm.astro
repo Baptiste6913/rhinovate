@@ -1,0 +1,21 @@
+---
+import { SITE } from '../config';
+interface Props {
+  id?: string;
+}
+const { id = 'waitlist' } = Astro.props;
+---
+<div>
+  <form class="wl" id={`${id}-form`} data-form="waitlist" data-endpoint={SITE.formEndpoint} data-email={SITE.contactEmail} data-subject="Rhinovate patient waitlist" data-done={`${id}-done`} novalidate>
+    <input type="hidden" name="_subject" value="Rhinovate patient waitlist" />
+    <label class="sr-only" for={`${id}-email`}>Email</label>
+    <input class="input" id={`${id}-email`} name="email" type="email" autocomplete="email" placeholder="Your email" required data-missing="Enter your email." aria-describedby={`${id}-err`} />
+    <button class="btn btn-primary" type="submit">Join the waitlist</button>
+    <p class="form-status" data-form-status role="alert" hidden></p>
+  </form>
+  <p class="err" id={`${id}-err`} hidden></p>
+  <div class="done" id={`${id}-done`} hidden tabindex="-1">
+    <h3 data-done-title>You're on the waitlist</h3>
+    <p class="muted" data-done-text></p>
+  </div>
+</div>

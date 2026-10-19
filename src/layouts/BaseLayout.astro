@@ -1,0 +1,58 @@
+---
+import '@fontsource-variable/mona-sans/standard.css';
+import '../styles/global.css';
+import LogoSprite from '../components/LogoSprite.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Preload the 3D face mesh on pages that show a live viewer. */
+  preloadFace?: boolean;
+}
+const { title, description = SITE.description, preloadFace = false } = Astro.props;
+const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | 3D consultation software for rhinoplasty surgeons`;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const canonical = Astro.site ? new URL(path, Astro.site).href : undefined;
+const ogImage = Astro.site ? new URL('/og-image.png', Astro.site).href : '/og-image.png';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    {preloadFace && <link rel="preload" href="/models/face-mesh.bin" as="fetch" type="application/octet-stream" crossorigin="anonymous" />}
+  </head>
+  <body>
+    <LogoSprite />
+    <a class="skip" href="#main">Skip to content</a>
+    <Header path={path} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import { initSite } from '../scripts/site';
+      import { initForms } from '../scripts/forms';
+      initSite();
+      initForms();
+    </script>
+  </body>
+</html>

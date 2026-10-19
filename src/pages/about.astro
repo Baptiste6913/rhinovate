@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config';
+---
+<BaseLayout
+  title="About"
+  description="Rhinovate builds 3D consultation software for rhinoplasty surgeons: planning on the patient's own face and a recovery forecast up to month 12. Developed with input from practicing surgeons."
+>
+  <section class="page-head" aria-labelledby="page-title">
+    <div class="wrap">
+      <p class="kicker">About</p>
+      <h1 id="page-title">Built with surgeons, for the consultation room</h1>
+      <p class="lead">Rhinovate started from two problems that came up in our interviews with surgeons. Patients decide on a nose they cannot see, and the recovery surprises them.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="built-title">
+    <div class="wrap proof-grid">
+      <div>
+        <h2 id="built-title">What we built</h2>
+        <p>An iPhone scan that becomes a 3D model of the face, with tools to plan the nose on it together with the patient. A healing model then forecasts the recovery zone by zone, up to month 12.</p>
+      </div>
+      <dl class="facts">
+        <div><dt>113</dt><dd>surgeons interviewed while building the product</dd></div>
+        <div><dt>2,500+</dt><dd>people have used the simulation</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="next-title">
+    <div class="wrap two-col">
+      <div>
+        <h2 id="next-title">Where we are going</h2>
+      </div>
+      <div>
+        <p>Today, the recovery forecast is calibrated on published clinical data. Our goal is an AI model of our own, trained on 3D follow-up scans that partner clinics share with their patients' consent.</p>
+        <p><a class="text-link" href="/demo#partner">Become a partner clinic</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="team-title">
+    <div class="wrap two-col">
+      <div>
+        <h2 id="team-title">Founders</h2>
+        <p>Rhinovate was founded in San Francisco.</p>
+      </div>
+      <ul class="team">
+        <li><strong>Deesha Pathak</strong><span class="role">Co-founder and CEO</span></li>
+        <li><strong>Baptiste Bouault</strong><span class="role">Co-founder and COO</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="contact-title">
+    <div class="wrap two-col">
+      <div>
+        <h2 id="contact-title">Contact</h2>
+        <p>Write to us about a demo or a partnership.</p>
+      </div>
+      <div>
+        <div class="foot-mail">
+          <span id="about-email">{SITE.contactEmail}</span>
+          <button class="copy-btn" type="button" data-copy={SITE.contactEmail} aria-describedby="about-email">Copy</button>
+        </div>
+        <p><a class="btn btn-primary" href="/demo">Request a demo</a></p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

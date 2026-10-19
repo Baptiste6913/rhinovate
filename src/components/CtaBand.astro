@@ -1,0 +1,23 @@
+---
+interface Props {
+  title?: string;
+  text?: string;
+  href?: string;
+  label?: string;
+}
+const {
+  title = 'See it on a full consultation',
+  text = 'We walk you through a sample case, from the scan to the recovery forecast.',
+  href = '/demo',
+  label = 'Request a demo'
+} = Astro.props;
+---
+<section class="section section-tight" aria-labelledby="cta-title">
+  <div class="wrap cta-band">
+    <div class="healing-copy">
+      <h2 id="cta-title">{title}</h2>
+      <p>{text}</p>
+    </div>
+    <div><a class="btn btn-primary" href={href}>{label}</a></div>
+  </div>
+</section>

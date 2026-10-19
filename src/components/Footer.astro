@@ -1,0 +1,49 @@
+---
+import { SITE } from '../config';
+const year = new Date().getFullYear();
+---
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="/" aria-label="Rhinovate home">
+          <svg class="brand-mark" aria-hidden="true" focusable="false"><use href="#rv-mark"></use></svg>
+          <span class="brand-word">RHINOVATE</span>
+        </a>
+        <p class="small">{SITE.tagline}</p>
+        <div class="foot-mail small">
+          <span id="footer-email">{SITE.contactEmail}</span>
+          <button class="copy-btn" type="button" data-copy={SITE.contactEmail} aria-describedby="footer-email">Copy</button>
+        </div>
+      </div>
+      <div class="foot-links">
+        <div>
+          <h2>Product</h2>
+          <ul>
+            <li><a href="/how-it-works">How it works</a></li>
+            <li><a href="/healing">Recovery forecast</a></li>
+            <li><a href="/demo">Request a demo</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Patients</h2>
+          <ul>
+            <li><a href="/patients">For patients</a></li>
+            <li><a href="/patients#waitlist">Join the waitlist</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Company</h2>
+          <ul>
+            <li><a href="/about">About</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="foot-legal">
+      <p>Simulations are estimates, not medical guarantees.</p>
+      <p>© {year} Rhinovate. Demo face mesh: MediaPipe, Apache License 2.0.</p>
+    </div>
+  </div>
+</footer>
