@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WaitlistForm from '../components/WaitlistForm.astro';
+import Faq from '../components/Faq.astro';
+
+const faq = [
+  {
+    q: 'Can I try Rhinovate on my own?',
+    a: 'Not yet. Rhinovate is offered through surgeons. Join the waitlist and we will tell you when you can try it.'
+  },
+  {
+    q: 'Does it replace a consultation?',
+    a: 'No. It helps you and your surgeon talk about the same result. Only your surgeon can tell you what is possible for your nose.'
+  },
+  {
+    q: 'Is the simulation exact?',
+    a: 'No simulation is. It shows a plan and a typical recovery, which is why every image is labeled as an estimate.'
+  }
+];
+---
+<BaseLayout
+  title="For patients"
+  description="With Rhinovate, your surgeon shows you the proposed nose in 3D, on your own face, and how your recovery is expected to unfold, before you decide."
+>
+  <section class="page-head" aria-labelledby="page-title">
+    <div class="wrap">
+      <p class="kicker">For patients</p>
+      <h1 id="page-title">See the plan on your own face</h1>
+      <p class="lead">Rhinovate is used by surgeons during the consultation. You see the proposed nose in 3D, on your own face, and how your recovery is expected to unfold, before you decide.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#waitlist">Join the waitlist</a>
+        <a class="btn btn-quiet" href="/healing">See the recovery forecast</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="steps-title">
+    <div class="wrap two-col">
+      <div>
+        <h2 id="steps-title">How it works for you</h2>
+        <p>Everything happens with your surgeon, during a normal consultation.</p>
+      </div>
+      <ol class="seq">
+        <li><div><h3>A short scan</h3><p>Your surgeon's team scans your face with an iPhone while you turn your head through five positions. No special equipment is involved.</p></div></li>
+        <li><div><h3>The plan, in 3D</h3><p>You and your surgeon look at the proposed change together, from every angle.</p></div></li>
+        <li><div><h3>The recovery, in advance</h3><p>You see how swelling and bruising are expected to evolve on the planned nose, so the first weeks hold fewer surprises.</p></div></li>
+        <li><div><h3>Your decision</h3><p>You decide with a clear picture of the plan and of the recovery.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="compare-title">
+    <div class="wrap two-col">
+      <div>
+        <h2 id="compare-title">Your nose today, and the plan</h2>
+        <p>Your surgeon shapes the plan on a 3D model of your face. You compare it with your nose today, side by side, before anything is decided.</p>
+        <p class="small">Demo face shown here. Your simulation uses your own scan.</p>
+      </div>
+      <div class="pair">
+        <figure class="shot">
+          <img src="/images/plan-today.webp" width="800" height="1000" alt="Demo face in profile with a dorsal hump and a low tip" loading="lazy" decoding="async" />
+          <figcaption>Today</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="/images/plan-planned.webp" width="800" height="1000" alt="The same profile with a straight dorsum and a lifted tip, with today's profile dashed over it" loading="lazy" decoding="async" />
+          <figcaption>Planned, with today's profile dashed</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="limits-title">
+    <div class="wrap split">
+      <h2 id="limits-title">What the simulation can and cannot tell you</h2>
+      <div class="split-cols">
+        <article class="rule-top">
+          <h3>What it shows</h3>
+          <p>The plan your surgeon proposes, on your face and from every angle. The typical course of recovery, stage by stage.</p>
+        </article>
+        <article class="rule-top">
+          <h3>What it does not do</h3>
+          <p>It does not promise a result, and it does not replace your surgeon's advice. Your final result depends on your anatomy and on how you heal.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="recovery-title">
+    <div class="wrap two-col">
+      <div>
+        <h2 id="recovery-title">Your recovery, stage by stage</h2>
+        <p>Swelling peaks in the first days and eases over the first month. At the tip, it can stay for up to a year. Seeing it in advance helps you recognize what is normal.</p>
+        <p><a class="text-link" href="/healing">See the recovery forecast</a></p>
+      </div>
+      <div class="trio">
+        <figure class="shot">
+          <img src="/images/heal-day2.webp" width="800" height="1000" alt="Demo face on day 2, swollen, with bruising around the eyes" loading="lazy" decoding="async" />
+          <figcaption>Day 2</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="/images/heal-month1.webp" width="800" height="1000" alt="Demo face at month 1, with mild swelling at the tip" loading="lazy" decoding="async" />
+          <figcaption>Month 1</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="/images/heal-month12.webp" width="800" height="1000" alt="Demo face at month 12, settled" loading="lazy" decoding="async" />
+          <figcaption>Month 12</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="pfaq-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="pfaq-title">Questions patients ask</h2>
+      </div>
+      <Faq items={faq} />
+    </div>
+  </section>
+
+  <section class="section" id="waitlist" aria-labelledby="waitlist-title">
+    <div class="wrap two-col">
+      <div>
+        <h2 id="waitlist-title">Join the waitlist</h2>
+        <p>Rhinovate is offered through surgeons. Leave your email and we will let you know when you can try it.</p>
+      </div>
+      <WaitlistForm id="patients-waitlist" />
+    </div>
+  </section>
+</BaseLayout>

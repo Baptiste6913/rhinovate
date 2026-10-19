@@ -1,0 +1,128 @@
+---
+/*
+  Live demo of a Rhinovate consultation on a demo face.
+  Plan: the nose today next to the planned nose, with today's profile dashed over the plan.
+  Recovery: the planned nose through the recovery forecast, with the swelling and bruising curves.
+*/
+import { STAGES, bruisePhase, bruising, stageForDay, swelling } from '../scripts/face/healing-model';
+
+interface Props {
+  id: string;
+  mode?: 'plan' | 'recovery';
+  /** Day shown when the recovery view opens. */
+  day?: number;
+  /** Build the 3D view at once (above the fold) instead of when it scrolls near. */
+  eager?: boolean;
+}
+const { id, mode = 'plan', day = 7, eager = false } = Astro.props;
+const stage = stageForDay(day);
+const tab = (name: 'plan' | 'recovery') => ({
+  id: `${id}-tab-${name}`,
+  'aria-selected': mode === name ? 'true' : 'false',
+  tabindex: mode === name ? 0 : -1
+});
+---
+<figure class="ws" data-workspace data-mode={mode} data-day={day} data-eager={eager ? '' : undefined} aria-labelledby={`${id}-cap`}>
+  <div class="ws-bar">
+    <p class="ws-id">
+      <svg class="ws-mark" aria-hidden="true" focusable="false"><use href="#rv-mark"></use></svg>
+      <span class="ws-patient">Demo patient</span>
+      <span class="ws-case">Primary rhinoplasty</span>
+    </p>
+    <div class="ws-tabs" role="tablist" aria-label="Consultation step">
+      <button type="button" role="tab" data-tab="plan" aria-controls={`${id}-body`} {...tab('plan')}>Plan</button>
+      <button type="button" role="tab" data-tab="recovery" aria-controls={`${id}-body`} {...tab('recovery')}>Recovery</button>
+    </div>
+  </div>
+
+  <div class="ws-body" id={`${id}-body`} role="tabpanel" aria-labelledby={`${id}-tab-${mode}`}>
+    <div class="ws-view">
+      <canvas class="ws-canvas" data-canvas tabindex="0" role="img" aria-label="3D demo face"></canvas>
+      <svg class="ws-overlay" data-overlay aria-hidden="true"></svg>
+      <span class="ws-tag ws-tag-a" data-tag="a">Today</span>
+      <span class="ws-tag ws-tag-b" data-tag="b">Planned</span>
+      <p class="no3d" data-no3d hidden>The 3D view needs WebGL, which is turned off in this browser.</p>
+    </div>
+
+    <div class="ws-side">
+      <div class="ws-pane" data-pane="plan" hidden={mode !== 'plan'}>
+        <div class="ws-control">
+          <label for={`${id}-hump`}>Hump reduction</label>
+          <input id={`${id}-hump`} type="range" min="0" max="100" value="100" data-ctl="hump" />
+        </div>
+        <div class="ws-control">
+          <label for={`${id}-tip`}>Tip lift</label>
+          <input id={`${id}-tip`} type="range" min="0" max="100" value="100" data-ctl="tip" />
+        </div>
+        <table class="ws-table">
+          <caption>Measured on this model</caption>
+          <thead>
+            <tr><th scope="col"><span class="sr-only">Measure</span></th><th scope="col">Today</th><th scope="col">Planned</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Dorsal hump</th><td data-out="hump-today">4.3 mm</td><td class="is-plan" data-out="hump-plan">0.7 mm</td></tr>
+            <tr><th scope="row">Tip lift</th><td>0 mm</td><td class="is-plan" data-out="tip-plan">2.6 mm</td></tr>
+          </tbody>
+        </table>
+        <ul class="ws-key">
+          <li><span class="key-dash" aria-hidden="true"></span>Profile today</li>
+          <li><span class="key-tint" aria-hidden="true"></span>Changed by the plan</li>
+        </ul>
+        <button type="button" class="ws-next" data-goto="recovery">Forecast the recovery for this plan</button>
+      </div>
+
+      <div class="ws-pane" data-pane="recovery" hidden={mode !== 'recovery'}>
+        <div class="ws-stage" aria-live="polite">
+          <p class="ws-when" data-out="when">{stage.label}</p>
+          <p class="ws-what" data-out="what">{stage.text}</p>
+        </div>
+        <dl class="ws-reads">
+          <div><dt>Swelling</dt><dd data-out="swelling">{Math.round(swelling(day) * 100)}% of peak</dd></div>
+          <div><dt>Bruising</dt><dd data-out="bruising">{bruisePhase(day)}</dd></div>
+        </dl>
+        <fieldset class="ws-skin">
+          <legend>Skin thickness</legend>
+          <div class="seg">
+            {(['thin', 'medium', 'thick'] as const).map((s) => (
+              <label>
+                <input type="radio" name={`${id}-skin`} value={s} data-skin checked={s === 'medium'} />
+                <span>{s[0].toUpperCase() + s.slice(1)}</span>
+              </label>
+            ))}
+          </div>
+          <p class="ws-hint">Thicker skin holds swelling longer, mostly at the tip.</p>
+        </fieldset>
+      </div>
+    </div>
+
+    <div class="ws-strip" data-pane="recovery" hidden={mode !== 'recovery'}>
+      <ul class="ws-legend">
+        <li class="lg-swell">Swelling</li>
+        <li class="lg-bruise">Bruising</li>
+      </ul>
+      <div class="ws-timeline">
+        <svg class="ws-chart" data-chart aria-hidden="true"></svg>
+        <input type="range" min="0" max="1000" value="330" data-ctl="day" aria-label="Time since surgery" />
+        <div class="ticks" data-ticks></div>
+      </div>
+      <div class="sr-only">
+        <table>
+        <caption>Recovery forecast for the demo patient, as a share of each peak</caption>
+        <thead><tr><th scope="col">Time since surgery</th><th scope="col">Swelling</th><th scope="col">Bruising</th></tr></thead>
+        <tbody>
+          {STAGES.map((s) => (
+            <tr><th scope="row">{s.label}</th><td>{Math.round(swelling(s.day) * 100)}%</td><td>{Math.round(bruising(s.day) * 100)}%</td></tr>
+          ))}
+        </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <figcaption class="ws-cap" id={`${id}-cap`}>Live demo on a demo face, not a patient. Drag the face to turn it. Measurements are taken on this model, and the forecast shows a typical recovery.</figcaption>
+</figure>
+
+<script>
+  import { initWorkspace } from '../scripts/face/workspace';
+  document.querySelectorAll<HTMLElement>('[data-workspace]').forEach((el) => initWorkspace(el));
+</script>

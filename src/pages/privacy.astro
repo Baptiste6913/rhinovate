@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config';
+---
+<BaseLayout title="Privacy" description="How Rhinovate handles the information you send through this website.">
+  <section class="page-head" aria-labelledby="page-title">
+    <div class="wrap">
+      <h1 id="page-title">Privacy</h1>
+      <p class="lead">How we handle the information you send through this website.</p>
+      <p class="small">Last updated October 19, 2026</p>
+    </div>
+  </section>
+
+  <section class="section section-tight">
+    <div class="wrap">
+      <div class="prose">
+        <h2>What we collect</h2>
+        <p>When you request a demo, we receive your name, your clinic, your work email and, if you choose to give it, your monthly rhinoplasty volume. When you join the patient waitlist, we receive your email address.</p>
+
+        <h2>How we use it</h2>
+        <p>We use it only to answer your request, or to tell you when Rhinovate becomes available to you. We do not sell it and we do not use it for advertising.</p>
+
+        <h2>The 3D demo on this site</h2>
+        <p>The face shown on this website is a generic demo model that runs in your browser. This website does not access your camera and does not upload any image.</p>
+
+        <h2>Cookies and analytics</h2>
+        <p>This website does not use advertising or analytics cookies.</p>
+
+        <h2>How long we keep it</h2>
+        <p>We keep your details for as long as your request needs them, and delete them when you ask us to.</p>
+
+        <h2>Your rights</h2>
+        <p>You can ask us at any time to access or delete the information you sent. Write to <a class="text-link" href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

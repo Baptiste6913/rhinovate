@@ -1,0 +1,54 @@
+---
+import { SITE } from '../config';
+interface Props {
+  id?: string;
+}
+const { id = 'demo-form' } = Astro.props;
+---
+<div class="panel">
+  <form class="form" id={id} data-form="demo" data-endpoint={SITE.formEndpoint} data-email={SITE.contactEmail} data-subject="Rhinovate demo request" data-done={`${id}-done`} novalidate>
+    <input type="hidden" name="_subject" value="Rhinovate demo request" />
+    <div class="form-row">
+      <div class="field">
+        <label for={`${id}-name`}>Full name</label>
+        <input class="input" id={`${id}-name`} name="name" type="text" autocomplete="name" placeholder="Dr. Jane Smith" required data-missing="Enter your name." aria-describedby={`${id}-name-err`} />
+        <p class="err" id={`${id}-name-err`} hidden></p>
+      </div>
+      <div class="field">
+        <label for={`${id}-clinic`}>Clinic or practice</label>
+        <input class="input" id={`${id}-clinic`} name="clinic" type="text" autocomplete="organization" placeholder="Clinic name" required data-missing="Enter your clinic or practice." aria-describedby={`${id}-clinic-err`} />
+        <p class="err" id={`${id}-clinic-err`} hidden></p>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label for={`${id}-email`}>Work email</label>
+        <input class="input" id={`${id}-email`} name="email" type="email" autocomplete="email" placeholder="you@clinic.com" required data-missing="Enter your work email." aria-describedby={`${id}-email-err`} />
+        <p class="err" id={`${id}-email-err`} hidden></p>
+      </div>
+      <div class="field">
+        <label for={`${id}-volume`}>Rhinoplasties per month <span class="opt">(optional)</span></label>
+        <select class="input" id={`${id}-volume`} name="volume">
+          <option value="">Select</option>
+          <option>Fewer than 5</option>
+          <option>5 to 15</option>
+          <option>16 to 30</option>
+          <option>More than 30</option>
+        </select>
+      </div>
+    </div>
+    <label class="check" for={`${id}-partner`}>
+      <input id={`${id}-partner`} type="checkbox" name="partner" value="Yes" />
+      <span>My clinic is interested in becoming a partner clinic for the recovery model.</span>
+    </label>
+    <div class="form-foot">
+      <button class="btn btn-primary" type="submit">Request a demo</button>
+      <p class="small">We only use these details to arrange your demo.</p>
+    </div>
+    <p class="form-status" data-form-status role="alert" hidden></p>
+  </form>
+  <div class="done" id={`${id}-done`} hidden tabindex="-1">
+    <h3 data-done-title>Demo requested</h3>
+    <p class="muted" data-done-text></p>
+  </div>
+</div>

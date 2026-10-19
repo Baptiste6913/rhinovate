@@ -1,69 +1,67 @@
-# Welcome to your Lovable project
+# Rhinovate website
 
-## Project info
+Marketing site for Rhinovate, 3D consultation software for rhinoplasty surgeons: planning on a 3D model of the patient's face, and a recovery forecast from the first days to month 12.
 
-**URL**: https://lovable.dev/projects/84a93562-9db8-4ef7-8687-00e7153ff2f2
+The site is static. The home page and the recovery forecast page carry a live 3D demo that runs in the browser on a generic demo face.
 
-## How can I edit this code?
+## Stack
 
-There are several ways of editing your application.
+- [Astro](https://astro.build) 7, static output
+- [three.js](https://threejs.org) for the 3D demo
+- Mona Sans (variable), self-hosted through Fontsource
+- No UI framework and no tracking
 
-**Use Lovable**
+Node.js 22.22 or later.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/84a93562-9db8-4ef7-8687-00e7153ff2f2) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Scripts
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm install
+npm run dev       # local server with hot reload
+npm run build     # static site in dist/
+npm run preview   # serve the build locally
 ```
 
-**Edit a file directly in GitHub**
+## Configuration
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Copy `.env.example` to `.env` and fill in what you need.
 
-**Use GitHub Codespaces**
+| Variable | Purpose |
+| --- | --- |
+| `SITE_URL` | Public URL of the site, for example `https://rhinovate.com`. Enables canonical links, absolute Open Graph URLs and `sitemap-index.xml`. |
+| `PUBLIC_FORM_ENDPOINT` | Endpoint that receives the demo and waitlist forms as a multipart POST (Formspree or similar). Without it, the forms open the visitor's email app with the request filled in. |
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+The contact address and the navigation live in `src/config.ts`.
 
-## What technologies are used for this project?
+## Structure
 
-This project is built with .
+```
+public/
+  models/face-mesh.bin     demo face mesh (binary, about 140 kB)
+  images/                  static renders of the demo face (WebP)
+  og-image.png             social preview, 1200 x 630
+src/
+  components/Workspace.astro   live demo: Plan and Recovery views
+  pages/                       one file per page
+  scripts/face/
+    mesh.ts                    loads and decodes the demo mesh
+    face-model.ts              shape, planning morph, healing deformation, measurements
+    face-stage.ts              one WebGL canvas, split into panels
+    healing-model.ts           recovery curves and stages
+    recovery-chart.ts          swelling and bruising chart
+    workspace.ts               the demo controller
+  styles/global.css            design tokens and all styles
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## The 3D demo
 
-## How can I deploy this project?
+- **Plan view.** The nose today and the planned nose side by side, with today's profile dashed over the plan. The dorsal hump and the tip lift are measured live on the demo mesh.
+- **Recovery view.** The planned nose at any point from day 2 to month 12, in three-quarter view and in profile, with the swelling and bruising curves. Skin thickness changes the slow phase of swelling.
 
-Simply open [Lovable](https://lovable.dev/projects/84a93562-9db8-4ef7-8687-00e7153ff2f2) and click on Share -> Publish.
+The recovery curves follow the Rhinovate healing model, version 1: deterministic curves, illustrative and not patient-specific. The stage descriptions follow the American Society of Plastic Surgeons and University of Utah Health.
 
-## I want to use a custom domain - is that possible?
+The demo needs WebGL. Without it, the page shows a short notice and the rest of the content stays readable. With reduced motion turned on, the opening animation is skipped.
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## Credits
+
+The demo face is the MediaPipe canonical face model (Apache License 2.0), subdivided and packed into `public/models/face-mesh.bin`.

@@ -1,0 +1,32 @@
+---
+import { NAV } from '../config';
+
+interface Props {
+  path: string;
+}
+const { path } = Astro.props;
+const isCurrent = (href: string) => path === href || path === `${href}/`;
+---
+<header class="site-head" data-site-head>
+  <div class="wrap head-inner">
+    <a class="brand" href="/" aria-label="Rhinovate home">
+      <svg class="brand-mark" aria-hidden="true" focusable="false"><use href="#rv-mark"></use></svg>
+      <span class="brand-word">RHINOVATE</span>
+    </a>
+    <nav class="head-nav" aria-label="Main">
+      {NAV.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a>
+      ))}
+    </nav>
+    <a class="btn btn-primary btn-sm head-cta" href="/demo" aria-current={isCurrent('/demo') ? 'page' : undefined}>Request a demo</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>Menu</button>
+  </div>
+  <nav class="mobile-menu" id="mobile-menu" aria-label="Main" hidden>
+    <ul class="wrap">
+      {NAV.map((item) => (
+        <li><a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a></li>
+      ))}
+      <li><a href="/demo" aria-current={isCurrent('/demo') ? 'page' : undefined}>Request a demo</a></li>
+    </ul>
+  </nav>
+</header>

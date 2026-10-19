@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Workspace from '../components/Workspace.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { STAGES } from '../scripts/face/healing-model';
+---
+<BaseLayout
+  title="Recovery forecast"
+  description="Rhinovate forecasts swelling and bruising on the planned nose, zone by zone, from the first days after rhinoplasty to month 12, adjusted to the patient's skin thickness and age."
+  preloadFace
+>
+  <section class="page-head" aria-labelledby="page-title">
+    <div class="wrap">
+      <p class="kicker">Recovery forecast</p>
+      <h1 id="page-title">The whole recovery, shown before surgery</h1>
+      <p class="lead">Patients worry most in the weeks after surgery, when swelling hides the result. The forecast shows each stage on the planned nose, from the first days to month 12, so your patient knows what normal looks like.</p>
+    </div>
+  </section>
+
+  <section class="section-tight" aria-label="Recovery forecast demo" style="padding-top: 0">
+    <div class="wrap">
+      <Workspace id="heal-ws" mode="recovery" day={7} eager />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="model-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="model-title">How the forecast is built</h2>
+        <p>The forecast runs on Rhinovate's healing model: curves calibrated on published clinical recovery data, applied to the 3D model zone by zone. The same inputs always give the same forecast.</p>
+      </div>
+      <div class="grid-2">
+        <article>
+          <h3>Swelling fades in two phases</h3>
+          <p>A fast phase over the first weeks, then a slow phase that lasts months. Progress feels quick at first, then slows down.</p>
+        </article>
+        <article>
+          <h3>Each zone heals at its own pace</h3>
+          <p>The tip carries the most swelling and settles last. The dorsum and the nostrils follow, and swelling around the eyes clears early.</p>
+        </article>
+        <article>
+          <h3>Bruising changes color, then clears</h3>
+          <p>Bruising peaks in the first days and turns from purple to green, then yellow. It has usually faded by the end of the second week.</p>
+        </article>
+        <article>
+          <h3>Adjusted to the patient</h3>
+          <p>Thicker skin holds swelling longer, and age shifts the slow phase. The forecast takes both into account.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="ai-title">
+    <div class="wrap split">
+      <div class="sec-head">
+        <h2 id="ai-title">From published data to a model of our own</h2>
+      </div>
+      <div class="split-cols">
+        <article class="rule-top">
+          <p class="kicker">Today</p>
+          <h3>Published clinical data</h3>
+          <p>The healing model is calibrated on recovery milestones from the clinical literature. Swelling is highest in the first days, and about two thirds of it is gone after a month. The tip keeps refining for up to a year.</p>
+        </article>
+        <article class="rule-top">
+          <p class="kicker">Next</p>
+          <h3>Trained on real recoveries</h3>
+          <p>Our goal is an AI model of our own, trained on 3D follow-up scans that partner clinics share with their patients' consent. The more recoveries it learns from, the closer the forecast can get to the patient in front of you.</p>
+          <a class="text-link" href="/demo#partner">Become a partner clinic</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="stages-title">
+    <div class="wrap two-col">
+      <div>
+        <h2 id="stages-title">Stage by stage</h2>
+        <p>The typical course after rhinoplasty, as described by the American Society of Plastic Surgeons and University of Utah Health.</p>
+      </div>
+      <ol class="seq">
+        {STAGES.map((s) => (
+          <li>
+            <div>
+              <h3>{s.label}</h3>
+              <p>{s.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section-tight" aria-labelledby="sources-title">
+    <div class="wrap two-col">
+      <div>
+        <h2 id="sources-title">Sources</h2>
+      </div>
+      <ul class="sources">
+        <li><a href="https://www.plasticsurgery.org/news/blog/what-to-expect-during-your-rhinoplasty-recovery" rel="noopener" target="_blank">American Society of Plastic Surgeons: what to expect during your rhinoplasty recovery</a></li>
+        <li><a href="https://healthcare.utah.edu/the-scope/health-library/all/2026/02/rhinoplasty-recovery-timeline-what-expect-surgery-final" rel="noopener" target="_blank">University of Utah Health: rhinoplasty recovery timeline</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand title="Use it with your patients" text="We walk you through a sample case, from the scan to the last stage of the recovery forecast." />
+</BaseLayout>
