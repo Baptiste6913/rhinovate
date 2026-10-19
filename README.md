@@ -28,7 +28,7 @@ Copy `.env.example` to `.env` and fill in what you need.
 
 | Variable | Purpose |
 | --- | --- |
-| `SITE_URL` | Public URL of the site, for example `https://rhinovate.com`. Enables canonical links, absolute Open Graph URLs and `sitemap-index.xml`. |
+| `SITE_URL` | Public URL of the site, for example `https://www.example.com`. Enables canonical links, absolute Open Graph URLs and `sitemap-index.xml`. |
 | `PUBLIC_FORM_ENDPOINT` | Endpoint that receives the demo and waitlist forms as a multipart POST (Formspree or similar). Without it, the forms open the visitor's email app with the request filled in. |
 
 The contact address and the navigation live in `src/config.ts`.
