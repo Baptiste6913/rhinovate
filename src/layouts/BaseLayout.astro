@@ -11,8 +11,10 @@ interface Props {
   description?: string;
   /** Preload the 3D face mesh on pages that show a live viewer. */
   preloadFace?: boolean;
+  /** The page opens on a gray stage: the header matches it until the page scrolls. */
+  stage?: boolean;
 }
-const { title, description = SITE.description, preloadFace = false } = Astro.props;
+const { title, description = SITE.description, preloadFace = false, stage = false } = Astro.props;
 const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | 3D consultation software for rhinoplasty surgeons`;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const canonical = Astro.site ? new URL(path, Astro.site).href : undefined;
@@ -40,7 +42,7 @@ const ogImage = Astro.site ? new URL('/og-image.png', Astro.site).href : '/og-im
     <meta name="twitter:card" content="summary_large_image" />
     {preloadFace && <link rel="preload" href="/models/face-mesh.bin" as="fetch" type="application/octet-stream" crossorigin="anonymous" />}
   </head>
-  <body>
+  <body data-stage={stage ? '' : undefined}>
     <LogoSprite />
     <a class="skip" href="#main">Skip to content</a>
     <Header path={path} />

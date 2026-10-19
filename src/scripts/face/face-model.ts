@@ -1,4 +1,4 @@
-import { BufferAttribute, BufferGeometry, DoubleSide, Group, Mesh, ShaderMaterial, Vector3 } from 'three';
+import { BufferAttribute, BufferGeometry, DoubleSide, Group, Mesh, Points, ShaderMaterial, Vector3 } from 'three';
 import type { FaceMesh } from './mesh';
 import { MAX_SWELLING_CM, ZONE_WEIGHTS, bruiseColor, bruising, swelling } from './healing-model';
 
@@ -18,9 +18,10 @@ const VERTEX = /* glsl */ `
   varying float vCav;
   varying float vTintA;
   varying float vTintB;
+  varying float vY;
   void main() {
     vN = normalize(normalMatrix * normal);
-    vFade = fade; vCav = cav; vTintA = tintA; vTintB = tintB;
+    vFade = fade; vCav = cav; vTintA = tintA; vTintB = tintB; vY = position.y;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `;
@@ -33,12 +34,16 @@ const FRAGMENT = /* glsl */ `
   uniform float uTintAAmt;
   uniform vec3 uTintB;
   uniform float uTintBAmt;
+  uniform float uReveal;
+  uniform vec3 uScan;
   varying vec3 vN;
   varying float vFade;
   varying float vCav;
   varying float vTintA;
   varying float vTintB;
+  varying float vY;
   void main() {
+    if (vY < uReveal) discard;
     vec3 n = normalize(vN);
     if (!gl_FrontFacing) n = -n;
     vec3 L1 = normalize(vec3(-0.55, 0.55, 0.62));
@@ -52,7 +57,36 @@ const FRAGMENT = /* glsl */ `
     vec3 c = mix(uShadow, uLight, clamp(lum, 0.0, 1.0)) + spec;
     c = mix(c, c * uTintA, clamp(vTintA * uTintAAmt, 0.0, 1.0));
     c = mix(c, c * uTintB, clamp(vTintB * uTintBAmt, 0.0, 1.0));
+    c = mix(c, uScan, 1.0 - smoothstep(0.0, 0.07, vY - uReveal));
     gl_FragColor = vec4(mix(uBg, c, vFade), 1.0);
+  }
+`;
+
+/* Scan points: the raw vertices, shown below the scan line until the surface replaces them. */
+const POINTS_VERTEX = /* glsl */ `
+  attribute float fade;
+  uniform float uSize;
+  varying float vY;
+  varying float vFade;
+  void main() {
+    vY = position.y;
+    vFade = fade;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    gl_PointSize = uSize;
+  }
+`;
+
+const POINTS_FRAGMENT = /* glsl */ `
+  uniform vec3 uColor;
+  uniform float uOpacity;
+  uniform float uReveal;
+  varying float vY;
+  varying float vFade;
+  void main() {
+    if (vY >= uReveal) discard;
+    vec2 d = gl_PointCoord - 0.5;
+    if (dot(d, d) > 0.25) discard;
+    gl_FragColor = vec4(uColor, uOpacity * vFade);
   }
 `;
 
@@ -84,6 +118,8 @@ export class FaceModel {
   private baseTipY = 0;
   private opts: Required<ModelOptions>;
   private face: Mesh;
+  private points: Points | null = null;
+  private tintStrength = 0.38;
   /** Midline vertices from above the nasion to the subnasale, top to bottom: the nasal profile. */
   readonly noseProfile: number[];
 
@@ -120,7 +156,9 @@ export class FaceModel {
         uTintA: { value: rgb(this.opts.changeTint) },
         uTintAAmt: { value: 0.38 },
         uTintB: { value: rgb('#ffffff') },
-        uTintBAmt: { value: 0 }
+        uTintBAmt: { value: 0 },
+        uReveal: { value: -1000 },
+        uScan: { value: rgb('#23628f') }
       }
     });
     this.face = new Mesh(g, this.material);
@@ -174,7 +212,7 @@ export class FaceModel {
       this.tintB[i] = 0;
     }
     (this.material.uniforms.uTintA.value as Vector3).copy(rgb(this.opts.changeTint));
-    this.material.uniforms.uTintAAmt.value = 0.38;
+    this.material.uniforms.uTintAAmt.value = this.tintStrength;
     this.material.uniforms.uTintBAmt.value = 0;
     this.commit();
   }
@@ -211,6 +249,43 @@ export class FaceModel {
     this.commit();
   }
 
+  /** Strength of the blue tint on areas changed by the plan (0 to about 0.4). */
+  setTintStrength(a: number) {
+    this.tintStrength = a;
+    this.material.uniforms.uTintAAmt.value = a;
+  }
+
+  /**
+   * Scan reveal: the surface shows above height y (in cm, model space) and the raw scan points
+   * below it, with a thin line where they meet. Pass null to show the whole surface.
+   */
+  setReveal(y: number | null) {
+    const v = y ?? -1000;
+    this.material.uniforms.uReveal.value = v;
+    if (y === null) {
+      if (this.points) this.points.visible = false;
+      return;
+    }
+    if (!this.points) {
+      const material = new ShaderMaterial({
+        vertexShader: POINTS_VERTEX,
+        fragmentShader: POINTS_FRAGMENT,
+        transparent: true,
+        depthWrite: false,
+        uniforms: {
+          uSize: { value: 2.2 * Math.min(window.devicePixelRatio || 1, 2) },
+          uColor: { value: rgb('#1a2732') },
+          uOpacity: { value: 0.5 },
+          uReveal: { value: v }
+        }
+      });
+      this.points = new Points(this.geometry, material);
+      this.face.add(this.points);
+    }
+    this.points.visible = true;
+    (this.points.material as ShaderMaterial).uniforms.uReveal.value = v;
+  }
+
   /** World position of a vertex, with the model's current shape and rotation. */
   worldVertex(i: number, out: Vector3) {
     return out.set(this.pos[i * 3], this.pos[i * 3 + 1], this.pos[i * 3 + 2]).applyMatrix4(this.face.matrixWorld);
@@ -241,15 +316,21 @@ export class FaceModel {
       if (p[1] > -2.0 && p[1] < 0.5 && (!T || p[0] > T[0])) T = p;
     }
     let hump = 0;
+    let humpIndex = -1;
     if (N && T) {
       const dx = T[0] - N[0], dy = T[1] - N[1], L = Math.hypot(dx, dy);
-      for (const p of pts) {
+      const mid = this.mesh.midline;
+      for (let k = 0; k < pts.length; k++) {
+        const p = pts[k];
         if (p[1] < N[1] - 0.2 && p[1] > T[1] + 0.9) {
           const d = -((p[0] - N[0]) * dy - (p[1] - N[1]) * dx) / L;
-          if (d > hump) hump = d;
+          if (d > hump) {
+            hump = d;
+            humpIndex = mid[k];
+          }
         }
       }
     }
-    return { humpMm: hump * 10, tipLiftMm: (pos[1 * 3 + 1] - this.baseTipY) * 10 };
+    return { humpMm: hump * 10, tipLiftMm: (pos[1 * 3 + 1] - this.baseTipY) * 10, humpIndex };
   }
 }

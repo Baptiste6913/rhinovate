@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroStage from '../components/HeroStage.astro';
 import Workspace from '../components/Workspace.astro';
 import DemoForm from '../components/DemoForm.astro';
 import Faq from '../components/Faq.astro';
@@ -34,24 +35,16 @@ const compareRows = [
   { label: 'Forecast adjusted to the patient', photo: null, sim: null, us: 'Skin thickness and age' }
 ];
 ---
-<BaseLayout preloadFace>
-  <section class="hero" aria-labelledby="hero-title">
+<BaseLayout preloadFace stage>
+  <HeroStage />
+
+  <section class="section" id="try" aria-labelledby="try-title">
     <div class="wrap">
-      <div class="hero-grid">
-        <div class="hero-title">
-          <p class="kicker">For rhinoplasty surgeons</p>
-          <h1 id="hero-title">Close the gap between your plan and what your patient expects.</h1>
-        </div>
-        <div class="hero-side">
-          <p class="lead">Rhinovate uses AI to turn an iPhone scan into a 3D model of your patient's face. You plan the nose on it together, then show how the recovery will unfold, from the first days to month 12.</p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="/demo">Request a demo</a>
-            <a class="btn btn-quiet" href="/how-it-works">See how it works</a>
-          </div>
-          <p class="proof">Built with input from 113 surgeons.</p>
-        </div>
+      <div class="sec-head">
+        <h2 id="try-title">Try the consultation on a demo face</h2>
+        <p>Change the hump and the tip, then open the recovery forecast for the same plan.</p>
       </div>
-      <Workspace id="hero-ws" eager />
+      <Workspace id="try-ws" />
     </div>
   </section>
 

@@ -41,6 +41,7 @@ public/
   images/                  static renders of the demo face (WebP)
   og-image.png             social preview, 1200 x 630
 src/
+  components/HeroStage.astro   home page opening: scan, model, plan and recovery on the demo face
   components/Workspace.astro   live demo: Plan and Recovery views
   pages/                       one file per page
   scripts/face/
@@ -50,11 +51,13 @@ src/
     healing-model.ts           recovery curves and stages
     recovery-chart.ts          swelling and bruising chart
     workspace.ts               the demo controller
+    hero.ts                    the opening sequence of the home page
   styles/global.css            design tokens and all styles
 ```
 
 ## The 3D demo
 
+- **Opening sequence** (home page). The demo face is scanned (points become a surface), landmarks are placed, the nose is planned with today's profile dashed and measured live, then the recovery runs from day 2 to month 12. It ends on the plan and turns slowly. Each step can be replayed, and reduced motion shows still frames.
 - **Plan view.** The nose today and the planned nose side by side, with today's profile dashed over the plan. The dorsal hump and the tip lift are measured live on the demo mesh.
 - **Recovery view.** The planned nose at any point from day 2 to month 12, in three-quarter view and in profile, with the swelling and bruising curves. Skin thickness changes the slow phase of swelling.
 

@@ -1,0 +1,49 @@
+---
+/* Home page opening: the headline beside a live sequence on the demo face. */
+const steps = ['Scan', '3D model', 'Plan', 'Recovery'];
+---
+<section class="hs" aria-labelledby="hero-title" data-hero>
+  <div class="wrap hs-grid">
+    <div class="hs-copy">
+      <p class="kicker">For rhinoplasty surgeons</p>
+      <h1 id="hero-title">Close the gap between your plan and what your patient expects.</h1>
+      <p class="lead">Rhinovate uses AI to turn an iPhone scan into a 3D model of your patient's face. You plan the nose on it together, then show how the recovery will unfold, from the first days to month 12.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/demo">Request a demo</a>
+        <a class="btn btn-quiet" href="#try">Try it on a demo face</a>
+      </div>
+      <p class="proof">Built with input from 113 surgeons.</p>
+    </div>
+  </div>
+
+  <div class="hs-stage">
+    <div class="hs-panel">
+      <ol class="hs-steps" aria-label="Replay a step of the demo">
+        {steps.map((label, i) => (
+          <li>
+            <button type="button" data-step={i} aria-pressed={i === 0 ? 'true' : 'false'}>
+              <span class="hs-bar" aria-hidden="true"></span>
+              <span class="hs-label">{label}</span>
+            </button>
+          </li>
+        ))}
+      </ol>
+      <div class="hs-caption" aria-live="polite">
+        <p class="hs-cap-title" data-cap-title>Guided scan</p>
+        <p class="hs-cap-text" data-cap-text>Five head positions on an iPhone, captured automatically.</p>
+      </div>
+    </div>
+    <div class="hs-view">
+      <canvas class="hs-canvas" data-canvas role="img" aria-label="A demo face is scanned, planned and taken through the recovery forecast. Drag to turn it."></canvas>
+      <svg class="hs-overlay" data-overlay aria-hidden="true"></svg>
+      <img class="hs-fallback" data-fallback src="/images/plan-planned.webp" width="800" height="1000" alt="Demo face in profile with the planned nose and today's profile dashed" hidden />
+      <p class="hs-compact" data-compact hidden></p>
+    </div>
+    <p class="hs-note">Demo face, not a patient. Measurements taken on this model.</p>
+  </div>
+</section>
+
+<script>
+  import { initHero } from '../scripts/face/hero';
+  document.querySelectorAll<HTMLElement>('[data-hero]').forEach((el) => initHero(el));
+</script>
