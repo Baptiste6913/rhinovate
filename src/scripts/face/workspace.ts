@@ -1,27 +1,17 @@
-import { FaceModel } from './face-model';
-import { FaceStage, webglAvailable, type Panel, type View } from './face-stage';
-import { loadFaceMesh } from './mesh';
+import { openFaceLink, type FaceLink } from './face-link';
 import { RecoveryChart } from './recovery-chart';
 import { SKIN_TAU, STAGES, bruisePhase, dayToPosition, formatDay, positionToDay, stageForDay, swelling, type Skin } from './healing-model';
+import { clamp, type WorkspaceFrame, type WorkspaceParams } from './protocol';
 
-/** Clay on a cool gray viewport: reads as a 3D model, not as a photo. */
-export const TONE = { bg: '#eef1f4', shadow: '#a39c96', light: '#fdfcfa', changeTint: '#a7c6dd', swellTint: '#f0b4a2' };
+/*
+  The live demo of a consultation, page side: tabs, sliders, readouts and the overlay.
+  The faces are drawn by the scene in scenes.ts.
+*/
 
 type Mode = 'plan' | 'recovery';
 
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mm = (v: number) => `${Math.abs(v) < 0.05 ? '0' : v.toFixed(1)} mm`;
-const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-
-/** Profile framing. As the face turns toward the camera, the frame widens and moves with it. */
-export function profileView(yaw: number, pitch: number): View {
-  const t = (yaw - 0.8) / (1.45 - 0.8);
-  return { yaw, pitch, cx: lerp(0, 1.9, t), cy: 1.0, w: lerp(12, 10.8, clamp(t, 0, 1)), h: 12.5 };
-}
-export function obliqueView(yaw: number, pitch: number): View {
-  return { yaw, pitch, cx: lerp(-1.2, 0.2, (yaw - 0.3) / 0.6), cy: 1.0, w: 13, h: 13 };
-}
 
 /** Coalesces draw requests into one per animation frame. */
 function scheduler(draw: () => void) {
@@ -60,12 +50,8 @@ export function initWorkspace(root: HTMLElement) {
   let turn = 0;
   let pitch = -0.03;
   let intro = 0;
-  let todayHumpMm = 0;
 
-  let stage: FaceStage | null = null;
-  let today: FaceModel | null = null;
-  let planned: FaceModel | null = null;
-  let healing: FaceModel | null = null;
+  let link: FaceLink<WorkspaceParams> | null = null;
 
   const chart = new RecoveryChart(q<SVGSVGElement>('[data-chart]')!, (d) => {
     cancelAnimationFrame(intro);
@@ -74,37 +60,45 @@ export function initWorkspace(root: HTMLElement) {
 
   /* ---------- Drawing ---------- */
 
-  function panels(): Panel[] {
-    if (mode === 'plan') {
-      return [
-        { model: today!, x: 0, y: 0, w: 0.5, h: 1 },
-        { model: planned!, x: 0.5, y: 0, w: 0.5, h: 1 }
-      ];
-    }
-    return [
-      { model: healing!, x: 0, y: 0, w: 0.5, h: 1, view: obliqueView(clamp(0.55 + turn, 0.3, 1.0), pitch) },
-      { model: healing!, x: 0.5, y: 0, w: 0.5, h: 1, view: profileView(clamp(1.45 + turn, 0.8, 1.57), pitch) }
-    ];
-  }
+  /* Readouts are written only when their text changes. */
+  const texts = new Map<Element, string>();
+  const setText = (node: Element | null, value: string) => {
+    if (!node || texts.get(node) === value) return;
+    texts.set(node, value);
+    node.textContent = value;
+  };
+  const setValueText = (node: Element, value: string) => {
+    if (node.getAttribute('aria-valuetext') !== value) node.setAttribute('aria-valuetext', value);
+  };
 
-  function drawOverlay(list: Panel[], view: View) {
-    const W = canvas.clientWidth, H = canvas.clientHeight;
-    overlay.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    if (mode !== 'plan' || !today || !stage) {
+  function drawOverlay(f: WorkspaceFrame, p: WorkspaceParams) {
+    /* A frame asked for before the tab changed no longer matches what the canvas will show. */
+    if (p.mode !== mode) return;
+    overlay.setAttribute('viewBox', `0 0 ${p.W} ${p.H}`);
+    if (p.mode !== 'plan' || !f.profile.length) {
       overlay.innerHTML = '';
       return;
     }
-    const pts = stage.project(list[1], view, today, today.noseProfile);
-    const d = `M${pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' L')}`;
+    let d = '';
+    for (let i = 0; i < f.profile.length; i += 2) d += `${i ? ' L' : 'M'}${f.profile[i].toFixed(1)},${f.profile[i + 1].toFixed(1)}`;
     overlay.innerHTML = `<path d="${d}" fill="none" stroke="#1a2732" stroke-width="1.5" stroke-dasharray="5 4" stroke-linecap="round" stroke-linejoin="round"/>`;
   }
 
+  /** The scene has drawn a frame: the page shows what was measured on it. */
+  function onFrame(f: WorkspaceFrame, p: WorkspaceParams) {
+    setText(out('hump-today'), mm(f.todayHumpMm));
+    setText(out('hump-plan'), mm(f.humpMm));
+    setText(out('tip-plan'), mm(f.tipMm));
+    setValueText(humpCtl, `${Math.round(p.hump * 100)}% of the planned reduction. Dorsal hump ${mm(f.humpMm)}, ${mm(f.todayHumpMm)} today`);
+    setValueText(tipCtl, `${Math.round(p.tip * 100)}% of the planned lift. Tip lifted by ${mm(f.tipMm)}`);
+    drawOverlay(f, p);
+  }
+
   function draw() {
-    if (!stage) return;
-    const view = profileView(clamp(1.45 + turn, 0.8, 1.57), pitch);
-    const list = panels();
-    stage.draw(list, view);
-    drawOverlay(list, view);
+    if (!link) return;
+    const W = canvas.clientWidth, H = canvas.clientHeight;
+    if (!W || !H) return;
+    link.request({ W, H, mode, hump, tip, day, tau: SKIN_TAU[skin], turn, pitch });
   }
   const requestDraw = scheduler(draw);
 
@@ -117,14 +111,7 @@ export function initWorkspace(root: HTMLElement) {
     tipCtl.value = String(Math.round(t * 100));
     humpCtl.style.setProperty('--fill', `${h * 100}%`);
     tipCtl.style.setProperty('--fill', `${t * 100}%`);
-    if (!planned) return;
-    planned.setPlan(h, t);
-    const m = planned.measure();
-    out('hump-plan')!.textContent = mm(m.humpMm);
-    out('tip-plan')!.textContent = mm(m.tipLiftMm);
-    humpCtl.setAttribute('aria-valuetext', `${Math.round(h * 100)}% of the planned reduction. Dorsal hump ${mm(m.humpMm)}, ${mm(todayHumpMm)} today`);
-    tipCtl.setAttribute('aria-valuetext', `${Math.round(t * 100)}% of the planned lift. Tip lifted by ${mm(m.tipLiftMm)}`);
-    requestDraw();
+    if (link) requestDraw();
   }
 
   humpCtl.addEventListener('input', () => {
@@ -177,10 +164,7 @@ export function initWorkspace(root: HTMLElement) {
     [...ticks.children].forEach((b, i) => b.setAttribute('aria-pressed', STAGES[i] === s ? 'true' : 'false'));
     chart.setDay(d);
     if (mode === 'recovery') tagA.textContent = `Forecast, ${formatDay(d).toLowerCase()}`;
-    if (healing) {
-      healing.setHealingDay(d, tau);
-      requestDraw();
-    }
+    if (link) requestDraw();
   }
 
   function goTo(target: number) {
@@ -231,6 +215,7 @@ export function initWorkspace(root: HTMLElement) {
       canvas.setAttribute('aria-label', 'Two 3D views of the demo face in profile: the nose today, and the planned nose with today’s profile dashed over it. Use the arrow keys to turn them.');
     } else {
       tagB.hidden = true;
+      overlay.innerHTML = '';
       canvas.setAttribute('aria-label', 'The planned nose on the demo face, at the selected point of the recovery forecast, in three-quarter view and in profile. Use the arrow keys to turn them.');
       chart.draw();
       setDay(day);
@@ -290,20 +275,9 @@ export function initWorkspace(root: HTMLElement) {
   setDay(day);
 
   async function start() {
-    if (!webglAvailable()) return fail();
     try {
-      const mesh = await loadFaceMesh();
-      stage = new FaceStage(canvas, TONE.bg);
-      today = new FaceModel(mesh, TONE);
-      planned = new FaceModel(mesh, TONE);
-      healing = new FaceModel(mesh, TONE);
-      today.setPlan(0, 0, false);
-      todayHumpMm = today.measure().humpMm;
-      out('hump-today')!.textContent = mm(todayHumpMm);
-      stage.add(today);
-      stage.add(planned);
-      stage.add(healing);
-      healing.setHealingDay(day, SKIN_TAU[skin]);
+      link = await openFaceLink<WorkspaceParams, WorkspaceFrame>(canvas, 'workspace', onFrame);
+      if (!link) return fail();
       root.classList.add('is-live');
       if (mode === 'plan') playIntro();
       else setPlan(1, 1);

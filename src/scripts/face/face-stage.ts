@@ -1,15 +1,10 @@
 import { Color, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three';
 import type { FaceModel } from './face-model';
+import type { View } from './protocol';
 
-/** Where the camera looks. The region w by h (in cm, around cx, cy) always stays in frame. */
-export interface View {
-  yaw: number;
-  pitch: number;
-  cx: number;
-  cy: number;
-  w: number;
-  h: number;
-}
+export type { View };
+/** The canvas of the page, or the one handed over to a worker. */
+export type Surface = HTMLCanvasElement | OffscreenCanvas;
 
 /** A rectangle of the canvas, as fractions of its size from the top left, showing one model. */
 export interface Panel {
@@ -32,11 +27,19 @@ export class FaceStage {
   private camera = new PerspectiveCamera(FOV, 1, 1, 400);
   private models: FaceModel[] = [];
   private v = new Vector3();
+  private W = 0;
+  private H = 0;
 
-  constructor(readonly canvas: HTMLCanvasElement, background: string) {
+  constructor(readonly canvas: Surface, background: string, pixelRatio = 1) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: false, preserveDrawingBuffer: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.setPixelRatio(Math.min(pixelRatio || 1, 2));
     this.renderer.setClearColor(new Color(background), 1);
+  }
+
+  /** Size of the canvas on the page, in CSS pixels. A canvas handed to a worker cannot measure it. */
+  resize(W: number, H: number) {
+    this.W = W;
+    this.H = H;
   }
 
   add(model: FaceModel) {
@@ -58,7 +61,7 @@ export class FaceStage {
   }
 
   draw(panels: Panel[], view: View) {
-    const W = this.canvas.clientWidth, H = this.canvas.clientHeight;
+    const W = this.W, H = this.H;
     if (!W || !H) return;
     const ratio = this.renderer.getPixelRatio();
     if (this.canvas.width !== Math.round(W * ratio) || this.canvas.height !== Math.round(H * ratio)) {
@@ -82,7 +85,7 @@ export class FaceStage {
 
   /** Projects vertices of a model into a panel, in CSS pixels from the canvas top left. */
   project(panel: Panel, view: View, model: FaceModel, indices: ArrayLike<number>): Array<[number, number]> {
-    const W = this.canvas.clientWidth, H = this.canvas.clientHeight;
+    const W = this.W, H = this.H;
     this.aim({ ...panel, model }, panel.view ?? view, W, H);
     const left = panel.x * W, top = panel.y * H, pw = panel.w * W, ph = panel.h * H;
     const out: Array<[number, number]> = [];
@@ -91,14 +94,5 @@ export class FaceStage {
       out.push([left + ((this.v.x + 1) / 2) * pw, top + ((1 - this.v.y) / 2) * ph]);
     }
     return out;
-  }
-}
-
-export function webglAvailable(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
   }
 }

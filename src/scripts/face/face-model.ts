@@ -103,6 +103,8 @@ export interface ModelOptions {
   /** Tint for planned changes (plan mode) or swelling (healing mode). */
   changeTint?: string;
   swellTint?: string;
+  /** Device pixel ratio of the page, for the size of the scan points. */
+  pixelRatio?: number;
 }
 
 /** One instance of the demo face, with its own shape state (today, plan, or a healing day). */
@@ -129,7 +131,8 @@ export class FaceModel {
       shadow: options.shadow ?? '#aab4bc',
       light: options.light ?? '#ffffff',
       changeTint: options.changeTint ?? '#a7c6dd',
-      swellTint: options.swellTint ?? '#ecc3b7'
+      swellTint: options.swellTint ?? '#ecc3b7',
+      pixelRatio: options.pixelRatio ?? 1
     };
     this.base = mesh.positions;
     this.pos = new Float32Array(mesh.positions);
@@ -273,7 +276,7 @@ export class FaceModel {
         transparent: true,
         depthWrite: false,
         uniforms: {
-          uSize: { value: 2.2 * Math.min(window.devicePixelRatio || 1, 2) },
+          uSize: { value: 2.2 * Math.min(this.opts.pixelRatio || 1, 2) },
           uColor: { value: rgb('#1a2732') },
           uOpacity: { value: 0.5 },
           uReveal: { value: v }

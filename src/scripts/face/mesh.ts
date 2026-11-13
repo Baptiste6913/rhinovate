@@ -20,21 +20,20 @@ export interface FaceMesh {
   midline: Uint16Array;
 }
 
-let pending: Promise<FaceMesh> | null = null;
+let pending: Promise<ArrayBuffer> | null = null;
 
-export function loadFaceMesh(url = '/models/face-mesh.bin'): Promise<FaceMesh> {
+/** The packed mesh, fetched once per page. A caller that transfers it to a worker sends a copy. */
+export function loadFaceMeshBuffer(url = '/models/face-mesh.bin'): Promise<ArrayBuffer> {
   if (!pending) {
-    pending = fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error(`Face mesh request failed with status ${res.status}`);
-        return res.arrayBuffer();
-      })
-      .then(decode);
+    pending = fetch(url).then((res) => {
+      if (!res.ok) throw new Error(`Face mesh request failed with status ${res.status}`);
+      return res.arrayBuffer();
+    });
   }
   return pending;
 }
 
-function decode(buffer: ArrayBuffer): FaceMesh {
+export function decodeFaceMesh(buffer: ArrayBuffer): FaceMesh {
   const view = new DataView(buffer);
   const magic = String.fromCharCode(view.getUint8(0), view.getUint8(1), view.getUint8(2), view.getUint8(3));
   if (magic !== 'RHFM') throw new Error('Unexpected face mesh format');
