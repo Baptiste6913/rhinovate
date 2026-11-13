@@ -1,5 +1,7 @@
 ---
 import '@fontsource-variable/mona-sans/standard.css';
+/* The Latin subset is fetched with the page, so the text does not reflow when the font arrives. */
+import monaSansLatin from '@fontsource-variable/mona-sans/files/mona-sans-latin-standard-normal.woff2?url';
 import '../styles/global.css';
 import LogoSprite from '../components/LogoSprite.astro';
 import Header from '../components/Header.astro';
@@ -28,6 +30,7 @@ const ogImage = Astro.site ? new URL('/og-image.png', Astro.site).href : '/og-im
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="preload" href={monaSansLatin} as="font" type="font/woff2" crossorigin="anonymous" />
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
