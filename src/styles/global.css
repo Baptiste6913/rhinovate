@@ -11,6 +11,8 @@
   --ink: #1a2732;
   --ink-2: #55636e;
   --ink-3: #98a4ad;
+  /* The faintest tone that still reads as text: 4.9 to 1 on white. --ink-3 is for lines only. */
+  --ink-faint: #65727c;
   --line: #e4e9ed;
   --field-line: #d5dce1;
   --accent: #23628f;
@@ -383,14 +385,14 @@ input[type='range']:disabled { opacity: 0.4; cursor: default; }
 .compare tbody th { color: var(--ink); font-weight: 520; width: 28%; }
 .compare td { color: var(--ink-2); }
 .compare td.is-us { color: var(--ink); font-weight: 540; }
-.compare .no { color: var(--ink-3); }
+.compare .no { color: var(--ink-faint); }
 @media (max-width: 759px) {
   .compare thead { display: none; }
   .compare, .compare tbody, .compare tr, .compare th, .compare td { display: block; width: auto; }
   .compare tr { padding: 18px 0; border-top: 1px solid var(--line); }
   .compare tbody th { padding: 0 0 8px; border: 0; width: auto; }
   .compare td { display: grid; grid-template-columns: minmax(0, 9rem) minmax(0, 1fr); gap: 12px; padding: 5px 0; border: 0; }
-  .compare td::before { content: attr(data-label); color: var(--ink-3); font-weight: 400; }
+  .compare td::before { content: attr(data-label); color: var(--ink-faint); font-weight: 400; }
 }
 .table-note { margin-top: 16px; }
 
@@ -467,7 +469,7 @@ input[type='range']:disabled { opacity: 0.4; cursor: default; }
   border: 1px solid var(--field-line); background: #fff; color: var(--ink);
   font: inherit; font-size: 1rem; transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.input::placeholder { color: var(--ink-3); }
+.input::placeholder { color: var(--ink-faint); opacity: 1; }
 .input:hover { border-color: var(--ink-3); }
 .input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(35, 98, 143, 0.16); }
 select.input {
