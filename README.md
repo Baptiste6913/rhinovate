@@ -7,9 +7,9 @@ The site is static. The home page and the recovery forecast page carry a live 3D
 ## Stack
 
 - [Astro](https://astro.build) 7, static output
-- [three.js](https://threejs.org) for the 3D demo
+- [three.js](https://threejs.org) for the 3D demo, drawn from a worker on Chromium-based browsers
 - Mona Sans (variable), self-hosted through Fontsource
-- No UI framework and no tracking
+- No UI framework, no tracking and no third-party request
 
 Node.js 22.22 or later.
 
@@ -48,10 +48,14 @@ src/
     mesh.ts                    loads and decodes the demo mesh
     face-model.ts              shape, planning morph, healing deformation, measurements
     face-stage.ts              one WebGL canvas, split into panels
+    scenes.ts                  the two scenes: opening sequence and consultation demo
+    face-worker.ts             runs a scene in a worker, on a canvas handed over by the page
+    face-link.ts               page side of a scene: worker when possible, the page itself otherwise
+    protocol.ts                tones, camera framing, timeline and messages shared by both sides
     healing-model.ts           recovery curves and stages
     recovery-chart.ts          swelling and bruising chart
-    workspace.ts               the demo controller
-    hero.ts                    the opening sequence of the home page
+    workspace.ts               the demo controller (tabs, sliders, readouts, overlay)
+    hero.ts                    the opening sequence of the home page (clock, captions, overlay)
   styles/global.css            design tokens and all styles
 ```
 
@@ -64,6 +68,18 @@ src/
 The recovery curves follow the Rhinovate healing model, version 1: deterministic curves, illustrative and not patient-specific. The stage descriptions follow the American Society of Plastic Surgeons and University of Utah Health.
 
 The demo needs WebGL. Without it, the page shows a short notice and the rest of the content stays readable. With reduced motion turned on, the opening animation is skipped.
+
+### Where the face is drawn
+
+The page never draws the face itself when it can avoid it. It hands each canvas to a worker (`transferControlToOffscreen`), asks for frames, and lays the overlay and the readouts over the result. three.js then loads inside the worker only, and the page stays free while the face is drawn.
+
+This path is switched on for Chromium-based browsers, the engine it was tested on (`testedEngine` in `face-link.ts`). Other browsers, and any browser where the worker cannot draw WebGL, run the same scenes on the page. Test on Safari and Firefox before widening it.
+
+## Security headers
+
+`vercel.json` sends a content security policy with `default-src 'none'` and no inline script or style, along with `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` and `Cross-Origin-Opener-Policy`. The build keeps every script and stylesheet in a file (`inlineStylesheets: 'never'` and `assetsInlineLimit: 0` in `astro.config.mjs`), and the markup carries no `style` attribute.
+
+When you add a third-party resource, an inline style or a new kind of request, update the policy in the same change. Forms post to any HTTPS endpoint (`connect-src 'self' https:`), so `PUBLIC_FORM_ENDPOINT` needs no change there.
 
 ## Credits
 
